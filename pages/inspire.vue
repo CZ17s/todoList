@@ -15,11 +15,11 @@ v-row
           :class="item.status ? 'text-decoration-line-through font-weight-thin' : ''" 
           :label="item.list"  @click="findIndex(item.id)" :value="item.status" :id="item.list+ID")     
 
-      //- v-col.px-10
-      //-   v-checkbox( 
-      //-     v-for="(item, ID) in checkTrue" :key="ID" 
-      //-     :class="item.status ? 'text-decoration-line-through font-weight-thin' : ''" 
-      //-     :label="item.list"  @click="findIndex(item.id)")     
+      v-col.px-10
+        v-checkbox( 
+          v-for="(item, ID) in checkTrue" :key="ID" 
+          :class="item.status ? 'text-decoration-line-through font-weight-thin' : ''" 
+          :label="item.list"  @click="findIndex(item.id)")     
 
 
       v-col.d-flex.justify-center
