@@ -1,26 +1,33 @@
 <template lang="pug">
 
 v-row
-  v-card.d-flex.justify-center.cardBox
-    v-row.d-flex.flex-column
-      v-col
-        v-list-item-group.d-flex(v-model="selectedItem" color="primary")
-          v-list-item(v-for="(item, i) in items" :key="i")
-            v-list-item-icon.mx-auto
-              v-icon(v-text="item.icon")
+  v-col(cols="12")
+    v-card( width="250px")
+      v-tabs(v-model="tab" background-color="white" centered dark icons-and-text)
+        v-tab.mx-auto(href="#tab-1" )
+          v-icon(color="black") mdi-format-list-checkbox
+        v-tab(href="#tab-2")
+          v-icon(color="black") mdi-calendar-check-outline
 
-      v-col.px-10
-        v-checkbox( 
-          v-for="(item, ID) in checkFalse" :key="ID" 
-          :class="item.status ? 'text-decoration-line-through font-weight-thin' : ''" 
-          :label="item.list"  @click="findIndex(item.id)" :value="item.status" :id="item.list+ID")     
+      v-tabs-items(v-model="tab")
 
-      v-col.px-10
-        v-checkbox( 
-          v-for="(item, ID) in checkTrue" :key="ID" 
-          :class="item.status ? 'text-decoration-line-through font-weight-thin' : ''" 
-          :label="item.list"  @click="findIndex(item.id)")     
+        .text-h4.text-center(v-if="!checkDate") No List 
 
+        v-tab-item(:value="'tab-1'")
+          v-card
+            v-card-text
+              v-col(v-for="(item, ID) in sortList" :key="'1'+ID")
+                v-btn(icon :color="item.status ? 'indigo' : 'black'" @click="changStatus(item.id,item)" )
+                  v-icon {{item.status ? "mdi-checkbox-marked" : "mdi-checkbox-blank-outline"}}
+                span(:class="item.status ? 'text-decoration-line-through font-weight-thin' : ''") {{item.list}}
+
+        v-tab-item(:value="'tab-2'")
+          v-card
+            v-card-text
+              v-col(v-for="(item, ID) in checkTrue" :key="'1'+ID" @click="changStatus(item.id,item)")
+                v-btn(icon :color="item.status ? 'indigo' : 'black'" @click="changStatus(item.id,item)" )
+                  v-icon {{item.status ? "mdi-checkbox-marked" : "mdi-checkbox-blank-outline"}}
+                span(:class="item.status ? 'text-decoration-line-through font-weight-thin' : ''") {{item.list}}
 
       v-col.d-flex.justify-center
         v-dialog(v-model="dialog" persistent max-width="600px")
@@ -40,113 +47,42 @@ v-row
             v-card-actions
               v-btn(color="blue darken-1" text @click="dialog = false") Close
               v-btn(color="blue darken-1" text @click="insertList") Save
-
-
-  v-col
-    h1 {{checkTrue}}
-  v-col
-    h1 {{checkFalse}}
-
-      
 </template>
 
 <script>
+import { mapState } from "vuex"
+import { mapGetters } from "vuex";
 export default {
   name: 'InspirePage',
 
   data(){
     return{
-      checkbox: true,
+      tab: null,
       dialog: false,
-      selectedItem: 1,
-      items: [
-        { icon: 'mdi-format-list-checkbox' },
-        { icon: 'mdi-calendar-check-outline' },
-      ],
-      listCheck: [
-        {id: 0 , list: "Test-1" , status: false},
-        {id: 1 , list: "Test-2" , status: false},
-        {id: 2 , list: "Test-3" , status: false},
-      ],
-      listCheckTrue: [],
-      listCheckFalse: [],
       inputCheckBox: ''
-
     }
   },
   computed:{
-    checkTrue(){
-      if(this.listCheck.length > 0){
-        const checkTrue =  this.listCheck.filter((item) =>{
-        return item.status === true
-        })
-        return checkTrue
-      }
-      else{
-        return []
-      }
-    },
-    checkFalse(){
-      if(this.listCheck.length > 0){
-        const checkFalse =  this.listCheck.filter((item) =>{
-        return item.status === false
-        })
-        return checkFalse
-      }
-      else{
-        return []
-      }
-    },
+    ...mapState({
+      listCheck: state => state.listCheck,
+      }),
+    ...mapGetters([
+      'checkTrue',
+      'sortList',
+      'checkDate'
+    ]),
   }, 
   methods: {
     insertList(){
-      this.listCheck.push({id: this.listCheck.length+1 , list: this.inputCheckBox , status: false});
+      this.$store.commit('setData',{id: this.listCheck.length+1 , list: this.inputCheckBox , status: false})
       this.dialog = false
-      console.log('InsertList : '+this.listCheck);
     },
-    findIndex(item){
-
-      const index = this.listCheck.findIndex((element) => element.id === item)
-
-      this.listCheck[index].status = !this.listCheck[index].status
-
-      console.log(index);
-    }
-    // filterDisplay() {
-    //     let listCheckTrue = []
-    //     this.listCheckTrue =  this.listCheck.filter((item) =>{
-    //       return item.status === true
-    //     })
-    //     let listCheckFalse = []
-    //     this.listCheckFalse =  this.listCheck.filter((item) =>{
-    //       return item.status === false
-    //     })
-    //     console.log('Display True : ', this.listCheckTrue);
-    //     console.log('Display False : ', this.listCheckFalse);
-    //     console.log('Display Old', this.listCheck);
-    //     return this.listCheckTrue , this.listCheckFalse ;
-    
-    // }
+    changStatus(item){
+      this.$store.commit('setStatus',item)
+    },
   },
-  
 }
 </script>
 
 <style>
-
-.cardBox {
-  width: 350px;
-  border-radius: 50px;
-
-}
-button{
-    width: 100px;
-    height: 100px;
-    border-radius: 20px;
-}
-
-.iconBox{
-  width: 80px;
-}
-
 </style>
