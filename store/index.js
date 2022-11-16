@@ -6,7 +6,7 @@ export const state = () => ({
 // ---------------------------------------------------------------------------------------------------
 
 export const getters = {
-  checkTrue(state){
+  listDone(state){
     if(state.listCheck.length > 0){
       const checkTrue =  state.listCheck.filter((item) =>{
       return item.status === true
